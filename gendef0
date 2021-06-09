@@ -1,0 +1,36 @@
+#!/usr/bin/perl
+
+open STDIN, "<AIO.xs"
+   or die "AIO.xs: $!";
+
+open STDOUT, ">def0.h"
+   or die "def0.h: $!";
+
+print <<EOF;
+/* GENERATED FILE */
+/* use ./gendef0 to regenerate this file */
+EOF
+
+while (<>) {
+   if (/\/\*GENDEF0_SYSCALL\((.*),(.*)\)\*\//) {
+      my ($syscall, $linux) = ($1, $2);
+      print <<EOF;
+#if HAVE_SYSCALL
+# if __linux__ && !defined(SYS_$syscall)
+#  define SYS_$syscall $linux
+# endif
+#else
+# undef SYS_$syscall
+#endif
+#ifndef SYS_$syscall
+# define SYS_$syscall -1
+#endif
+EOF
+   }
+
+   if (/^\s*const_iv\s*\((\S+)\)\s*$/ || /^\s*const_niv\s*\([^,]+,\s*(\S+)\)\s*$/) {
+      print "#ifndef $1\n",
+            "#define $1 0\n",
+            "#endif\n";
+   }
+}
