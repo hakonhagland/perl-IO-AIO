@@ -1,0 +1,12 @@
+AIO.bs
+AIO.c
+AIO.o
+MYMETA.json
+MYMETA.yml
+Makefile
+blib/
+config.h
+config.log
+config.status
+pm_to_blib
+
